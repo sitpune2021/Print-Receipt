@@ -81,28 +81,24 @@ class PrinterApiController extends Controller
 
         $fullwidth = 720;
         $fullHeight = 300;
-        $cropTop = 10;
-        $cropBottom = 10;
-        $height = $fullHeight - $cropTop - $cropBottom;
-        $width = $fullwidth - $cropTop - $cropBottom;
 
+        // Ensure Puppeteer doesn't try to use restricted dirs
         Browsershot::html($html)
-            ->setOption('executablePath', '/usr/bin/google-chrome')
+            ->windowSize($fullwidth, $fullHeight)
+            ->deviceScaleFactor(2)
+            ->waitUntilNetworkIdle()
             ->setOption('args', [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
-                '--user-data-dir=/tmp/puppeteer'
+                '--user-data-dir=/tmp/puppeteer',
             ])
-            ->windowSize($fullwidth, $fullHeight)
-            ->deviceScaleFactor(2)
-            ->waitUntilNetworkIdle()
-            ->setEnvironmentVariable('HOME', '/tmp') 
+            ->setOption('executablePath', '/usr/bin/google-chrome')
+            ->setEnvironmentVariable('HOME', '/tmp')  // ✅ This is critical
             ->save($imagePath);
 
         $imageUrl = url($imageName);
         return response()->json(['image_url' => $imageUrl], 200, [], JSON_UNESCAPED_SLASHES);
-
     } catch (\Exception $e) {
         return response('Something went wrong: ' . $e->getMessage(), 500);
     }
