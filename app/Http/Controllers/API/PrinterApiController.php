@@ -88,7 +88,12 @@ class PrinterApiController extends Controller
 
         Browsershot::html($html)
             ->setOption('executablePath', '/usr/bin/google-chrome')
-            ->setOption('args', ['--user-data-dir=/tmp/puppeteer'])  // 👈 fix permissions issue
+            ->setOption('args', [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--user-data-dir=/tmp/puppeteer'
+            ])
             ->windowSize($fullwidth, $fullHeight)
             ->deviceScaleFactor(2)
             ->waitUntilNetworkIdle()
@@ -101,4 +106,5 @@ class PrinterApiController extends Controller
         return response('Something went wrong: ' . $e->getMessage(), 500);
     }
 }
+
 }
