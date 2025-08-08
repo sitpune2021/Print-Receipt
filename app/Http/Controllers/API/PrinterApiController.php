@@ -86,6 +86,7 @@ class PrinterApiController extends Controller
             $width = $fullwidth - $cropTop - $cropBottom;
 
             Browsershot::html($html)
+                ->setOption('executablePath', '/usr/bin/google-chrome') // 👈 ADD THIS LINE
                 ->windowSize($fullwidth, $fullHeight)     // Set full viewport
                 ->deviceScaleFactor(2)                // Retina quality
                 ->waitUntilNetworkIdle()
