@@ -97,6 +97,7 @@ class PrinterApiController extends Controller
             ->windowSize($fullwidth, $fullHeight)
             ->deviceScaleFactor(2)
             ->waitUntilNetworkIdle()
+            ->setEnvironmentVariable('HOME', '/tmp') 
             ->save($imagePath);
 
         $imageUrl = url($imageName);
