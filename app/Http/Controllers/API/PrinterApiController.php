@@ -92,6 +92,7 @@ class PrinterApiController extends Controller
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
                 '--user-data-dir=/tmp/puppeteer',
+                '--disable-crash-reporter',
             ])
             ->setOption('executablePath', '/usr/bin/google-chrome')
             ->setEnvironmentVariable('HOME', '/tmp')  // ✅ This is critical
