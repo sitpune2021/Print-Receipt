@@ -99,6 +99,8 @@ class PrinterApiController extends Controller
             '--disable-sync',
             '--metrics-recording-only',
             '--disable-default-apps',
+            '--crash-dumps-dir=/tmp/chrome-crashpad', // ✅ <--- This is new
+
 ])
 
             ])
