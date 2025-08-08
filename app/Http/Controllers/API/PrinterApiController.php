@@ -88,11 +88,19 @@ class PrinterApiController extends Controller
             ->deviceScaleFactor(2)
             ->waitUntilNetworkIdle()
             ->setOption('args', [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--user-data-dir=/tmp/puppeteer',
-                '--disable-crash-reporter',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--user-data-dir=/tmp/puppeteer',
+            '--disable-crash-reporter',
+            '--no-first-run',
+            '--no-default-browser-check',
+            '--disable-background-networking',
+            '--disable-sync',
+            '--metrics-recording-only',
+            '--disable-default-apps',
+])
+
             ])
             ->setOption('executablePath', '/usr/bin/google-chrome')
             ->setEnvironmentVariable('HOME', '/tmp')  // ✅ This is critical
