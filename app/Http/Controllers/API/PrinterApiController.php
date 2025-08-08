@@ -67,50 +67,35 @@ class PrinterApiController extends Controller
         }
     }
 
- public function getHTMLSP()
-{
-    try {
-        $response = Http::get('https://dev.vrlapps.com/corevrl/core_app_booking/bk_gcprint_collection_landscap.aspx');
-        if ($response->failed()) {
-            return response('Failed to fetch URL', 500);
+    public function getHTMLSP()
+    {
+        try {
+            $response = Http::get('https://dev.vrlapps.com/corevrl/core_app_booking/bk_gcprint_collection_landscap.aspx');
+            if ($response->failed()) {
+                return response('Failed to fetch URL', 500);
+            }
+            $html = $response->body();
+            $imageName = 'table-image-mobile.png';
+            $imagePath = public_path($imageName);
+
+            $fullwidth = 720;
+            $fullHeight = 300;       // original screenshot height
+            $cropTop = 10;           // pixels to crop from the top
+            $cropBottom = 10;        // pixels to crop from the bottom
+            $height = $fullHeight - $cropTop - $cropBottom;
+            $width = $fullwidth - $cropTop - $cropBottom;
+
+            Browsershot::html($html)
+                ->windowSize($fullwidth, $fullHeight)     // Set full viewport
+                ->deviceScaleFactor(2)                // Retina quality
+                ->waitUntilNetworkIdle()
+                // ->clip($cropTop, $cropTop, $width, $height)  // Crop: x=0, y=$cropTop, width, height
+                ->save($imagePath);
+            $imageUrl = url($imageName);
+            return response()->json(['image_url' => $imageUrl], 200, [], JSON_UNESCAPED_SLASHES);
+        } catch (\Exception $e) {
+            return response('Something went wrong: ' . $e->getMessage(), 500);
         }
-
-        $html = $response->body();
-        $imageName = 'table-image-mobile.png';
-        $imagePath = public_path($imageName);
-
-        $fullwidth = 720;
-        $fullHeight = 300;
-
-        // Ensure Puppeteer doesn't try to use restricted dirs
-        Browsershot::html($html)
-            ->windowSize($fullwidth, $fullHeight)
-            ->deviceScaleFactor(2)
-            ->waitUntilNetworkIdle()
-            ->setOption('args', [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--user-data-dir=/tmp/puppeteer',
-            '--disable-crash-reporter',
-            '--no-first-run',
-            '--no-default-browser-check',
-            '--disable-background-networking',
-            '--disable-sync',
-            '--metrics-recording-only',
-            '--disable-default-apps',
-            '--crash-dumps-dir=/tmp/chrome-crashpad', // ✅ <--- This is new
-            '--crash-dumps-dir=/tmp/chrome-crashpad',
-            ])
-            ->setOption('executablePath', '/usr/bin/google-chrome')
-            ->setEnvironmentVariable('HOME', '/tmp')  // ✅ This is critical
-            ->save($imagePath);
-
-        $imageUrl = url($imageName);
-        return response()->json(['image_url' => $imageUrl], 200, [], JSON_UNESCAPED_SLASHES);
-    } catch (\Exception $e) {
-        return response('Something went wrong: ' . $e->getMessage(), 500);
     }
-}
 
 }
