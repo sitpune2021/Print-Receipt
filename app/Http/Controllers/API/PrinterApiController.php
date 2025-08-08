@@ -100,6 +100,7 @@ class PrinterApiController extends Controller
             '--metrics-recording-only',
             '--disable-default-apps',
             '--crash-dumps-dir=/tmp/chrome-crashpad', // ✅ <--- This is new
+            '--crash-dumps-dir=/tmp/chrome-crashpad',
             ])
             ->setOption('executablePath', '/usr/bin/google-chrome')
             ->setEnvironmentVariable('HOME', '/tmp')  // ✅ This is critical
