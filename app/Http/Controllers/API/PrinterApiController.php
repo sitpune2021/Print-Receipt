@@ -67,7 +67,7 @@ class PrinterApiController extends Controller
         }
     }
 
- public function getHTMLSP()
+public function getHTMLSP()
 {
     try {
         $response = Http::get('https://dev.vrlapps.com/corevrl/core_app_booking/bk_gcprint_collection_landscap.aspx');
@@ -76,32 +76,65 @@ class PrinterApiController extends Controller
         }
 
         $html = $response->body();
+
+        // Parse and extract the desired table
+        $dom = new \DOMDocument();
+        libxml_use_internal_errors(true);
+        $dom->loadHTML($html);
+        libxml_clear_errors();
+
+        $tables = $dom->getElementsByTagName('table');
+        $tablesHtml = '';
+
+        if ($tables->length > 1) {
+            $tablesHtml = $dom->saveHTML($tables[1]);
+        } elseif ($tables->length > 0) {
+            $tablesHtml = $dom->saveHTML($tables[0]);
+        } else {
+            return response('No table found in the HTML.', 404);
+        }
+
+        // Wrap table in minimal HTML structure
+        $fullHtml = "
+            <html>
+            <head>
+                <style>
+                    body { margin: 0; padding: 0; font-family: sans-serif; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                </style>
+            </head>
+            <body>
+                $tablesHtml
+            </body>
+            </html>
+        ";
+
         $imageName = 'table-image-mobile.png';
         $imagePath = public_path($imageName);
 
         $fullwidth = 720;
         $fullHeight = 300;
 
-        // Ensure Puppeteer doesn't try to use restricted dirs
-        Browsershot::html($html)
+        // Use Puppeteer's own Chromium — don't specify executablePath
+        Browsershot::html($fullHtml)
             ->windowSize($fullwidth, $fullHeight)
             ->deviceScaleFactor(2)
             ->waitUntilNetworkIdle()
             ->setOption('args', [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '--user-data-dir=/tmp/puppeteer',
-            '--disable-crash-reporter',
-            '--no-first-run',
-            '--no-default-browser-check',
-            '--disable-background-networking',
-            '--disable-sync',
-            '--metrics-recording-only',
-            '--disable-default-apps',
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--user-data-dir=/tmp/puppeteer',
+                '--disable-crash-reporter',
+                '--no-first-run',
+                '--no-default-browser-check',
+                '--disable-background-networking',
+                '--disable-sync',
+                '--metrics-recording-only',
+                '--disable-default-apps',
             ])
-            ->setOption('executablePath', '/usr/bin/google-chrome')
-            ->setEnvironmentVariable('HOME', '/tmp')  // ✅ This is critical
+            ->setEnvironmentVariable('HOME', '/tmp') // Prevents permission issues
             ->save($imagePath);
 
         $imageUrl = url($imageName);
