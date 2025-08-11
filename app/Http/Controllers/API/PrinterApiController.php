@@ -79,24 +79,23 @@ class PrinterApiController extends Controller
             $imageName = 'table-image-mobile.png';
             $imagePath = public_path($imageName);
 
-
-
-        Browsershot::html($html)
-            ->setNodeBinary('/usr/bin/node')
-            ->setNpmBinary('/usr/bin/npm')
-            ->setChromePath('/usr/local/bin/chromium-browser')
-            ->addChromiumArguments([
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--headless=new',
-                '--user-data-dir=/tmp/chrome-user-data',
-           ])
-                ->windowSize(720, 300)
+                Browsershot::html($html)
+                    ->setNodeBinary('/usr/bin/node')
+                    ->setNpmBinary('/usr/bin/npm')
+                    ->setChromePath('/usr/local/bin/chromium-browser')
+                    ->addChromiumArguments([
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--headless=new',
+                        '--user-data-dir=/tmp/chrome-user-data',
+                ])
+                ->windowSize(700, 300)
                 ->deviceScaleFactor(2)
                 ->waitUntilNetworkIdle()
-                ->save(public_path('table-image-mobile.png'));
+                ->save($imagePath);
 
-            return response()->json(['image_url' => url($imageName)], 200);
+           $imageUrl = url($imageName);
+            return response()->json(['image_url' => $imageUrl], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Exception $e) {
             return response('Something went wrong: ' . $e->getMessage(), 500);
         }
