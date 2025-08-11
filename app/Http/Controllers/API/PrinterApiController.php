@@ -68,34 +68,30 @@ class PrinterApiController extends Controller
     }
 
     public function getHTMLSP()
-    {
-        try {
-            $response = Http::get('https://dev.vrlapps.com/corevrl/core_app_booking/bk_gcprint_collection_landscap.aspx');
-            if ($response->failed()) {
-                return response('Failed to fetch URL', 500);
-            }
-            $html = $response->body();
-            $imageName = 'table-image-mobile.png';
-            $imagePath = public_path($imageName);
-
-            $fullwidth = 720;
-            $fullHeight = 300;       // original screenshot height
-            $cropTop = 10;           // pixels to crop from the top
-            $cropBottom = 10;        // pixels to crop from the bottom
-            $height = $fullHeight - $cropTop - $cropBottom;
-            $width = $fullwidth - $cropTop - $cropBottom;
-
-            Browsershot::html($html)
-                ->windowSize($fullwidth, $fullHeight)     // Set full viewport
-                ->deviceScaleFactor(2)                // Retina quality
-                ->waitUntilNetworkIdle()
-                // ->clip($cropTop, $cropTop, $width, $height)  // Crop: x=0, y=$cropTop, width, height
-                ->save($imagePath);
-            $imageUrl = url($imageName);
-            return response()->json(['image_url' => $imageUrl], 200, [], JSON_UNESCAPED_SLASHES);
-        } catch (\Exception $e) {
-            return response('Something went wrong: ' . $e->getMessage(), 500);
+{
+    try {
+        $response = Http::get('https://dev.vrlapps.com/corevrl/core_app_booking/bk_gcprint_collection_landscap.aspx');
+        if ($response->failed()) {
+            return response('Failed to fetch URL', 500);
         }
+
+        $html = $response->body();
+        $imageName = 'table-image-mobile.png';
+        $imagePath = public_path($imageName);
+
+        Browsershot::html($html)
+            ->setNodeBinary('/usr/bin/node') // adjust if needed
+            ->setNpmBinary('/usr/bin/npm')   // adjust if needed
+            ->windowSize(720, 300)
+            ->deviceScaleFactor(2)
+            ->waitUntilNetworkIdle()
+            ->setOption('args', ['--no-sandbox', '--disable-setuid-sandbox'])
+            ->save($imagePath);
+
+        return response()->json(['image_url' => url($imageName)], 200);
+    } catch (\Exception $e) {
+        return response('Something went wrong: ' . $e->getMessage(), 500);
     }
+}
 
 }
