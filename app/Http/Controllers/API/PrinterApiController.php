@@ -79,13 +79,12 @@ class PrinterApiController extends Controller
             $imageName = 'table-image-mobile.png';
             $imagePath = public_path($imageName);
 
-            // Replace this path with the exact output of your `npx puppeteer executablePath`
-            $chromePath = '/usr/local/bin/chrome-headless';
+          
 
             Browsershot::html($html)
                 ->setNodeBinary('/usr/bin/node') // adjust if `which node` shows a different path
                 ->setNpmBinary('/usr/bin/npm')   // adjust if `which npm` shows a different path
-                ->setChromePath($chromePath)
+                ->setChromePath('/usr/local/bin/chromium-browser')
                 ->windowSize(720, 300)
                 ->deviceScaleFactor(2)
                 ->waitUntilNetworkIdle()
