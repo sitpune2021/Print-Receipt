@@ -81,36 +81,20 @@ class PrinterApiController extends Controller
 
 
 
-            Browsershot::html($html)
-                ->setNodeBinary('/usr/bin/node') // adjust if `which node` shows a different path
-                ->setNpmBinary('/usr/bin/npm')   // adjust if `which npm` shows a different path
-                ->setChromePath('/usr/local/bin/chromium-browser')
-                ->setOption('args', [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                    '--disable-software-rasterizer',
-                    '--disable-crash-reporter',              // ✅ critical
-                    '--disable-extensions',
-                    '--no-first-run',
-                    '--no-default-browser-check',
-                    '--disable-background-networking',
-                    '--disable-sync',
-                    '--metrics-recording-only',
-                    '--disable-default-apps',
-                    '--mute-audio',
-                    '--remote-debugging-port=0',
-                    '--headless=new',                        // ✅ newer headless mode
-                    '--user-data-dir=/tmp/chrome-user-data', // ✅ isolate crashpad
-                    '--enable-logging',
-                    '--v=1'
-                ])
+        Browsershot::html($html)
+            ->setNodeBinary('/usr/bin/node')
+            ->setNpmBinary('/usr/bin/npm')
+            ->setChromePath('/usr/local/bin/chromium-browser')
+            ->addChromiumArguments([
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--headless=new',
+                '--user-data-dir=/tmp/chrome-user-data',
+           ])
                 ->windowSize(720, 300)
                 ->deviceScaleFactor(2)
                 ->waitUntilNetworkIdle()
-                ->setOption('args', ['--no-sandbox', '--disable-setuid-sandbox'])
-                ->save($imagePath);
+                ->save(public_path('table-image-mobile.png'));
 
             return response()->json(['image_url' => url($imageName)], 200);
         } catch (\Exception $e) {
