@@ -89,14 +89,22 @@ class PrinterApiController extends Controller
                     '--no-sandbox',
                     '--disable-setuid-sandbox',
                     '--disable-dev-shm-usage',
-                    '--disable-crash-reporter',         // ✅ disables crashpad error
+                    '--disable-gpu',
+                    '--disable-software-rasterizer',
+                    '--disable-crash-reporter',              // ✅ critical
+                    '--disable-extensions',
                     '--no-first-run',
                     '--no-default-browser-check',
                     '--disable-background-networking',
                     '--disable-sync',
                     '--metrics-recording-only',
                     '--disable-default-apps',
-                    '--headless=new'
+                    '--mute-audio',
+                    '--remote-debugging-port=0',
+                    '--headless=new',                        // ✅ newer headless mode
+                    '--user-data-dir=/tmp/chrome-user-data', // ✅ isolate crashpad
+                    '--enable-logging',
+                    '--v=1'
                 ])
                 ->windowSize(720, 300)
                 ->deviceScaleFactor(2)
