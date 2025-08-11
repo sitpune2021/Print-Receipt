@@ -79,12 +79,25 @@ class PrinterApiController extends Controller
             $imageName = 'table-image-mobile.png';
             $imagePath = public_path($imageName);
 
-          
+
 
             Browsershot::html($html)
                 ->setNodeBinary('/usr/bin/node') // adjust if `which node` shows a different path
                 ->setNpmBinary('/usr/bin/npm')   // adjust if `which npm` shows a different path
                 ->setChromePath('/usr/local/bin/chromium-browser')
+                ->setOption('args', [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-crash-reporter',         // ✅ disables crashpad error
+                    '--no-first-run',
+                    '--no-default-browser-check',
+                    '--disable-background-networking',
+                    '--disable-sync',
+                    '--metrics-recording-only',
+                    '--disable-default-apps',
+                    '--headless=new'
+                ])
                 ->windowSize(720, 300)
                 ->deviceScaleFactor(2)
                 ->waitUntilNetworkIdle()
