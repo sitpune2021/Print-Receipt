@@ -80,7 +80,7 @@ class PrinterApiController extends Controller
             $imagePath = public_path($imageName);
 
             // Replace this path with the exact output of your `npx puppeteer executablePath`
-            $chromePath = '/root/.cache/puppeteer/chrome/linux-139.0.7258.66/chrome-linux64/chrome';
+            $chromePath = '/usr/local/bin/chrome-headless';
 
             Browsershot::html($html)
                 ->setNodeBinary('/usr/bin/node') // adjust if `which node` shows a different path
