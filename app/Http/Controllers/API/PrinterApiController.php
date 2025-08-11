@@ -94,8 +94,13 @@ class PrinterApiController extends Controller
                 ->waitUntilNetworkIdle()
                 ->save($imagePath);
 
-           $imageUrl = url($imageName);
-            return response()->json(['image_url' => $imageUrl], 200, [], JSON_UNESCAPED_SLASHES);
+            // $imageUrl = url($imageName);
+            $imageData = file_get_contents($imagePath);
+            $base64 = base64_encode($imageData);
+            $imageInfo = getimagesize($imagePath);
+            $base64Image = 'data:' . $imageInfo['mime'] . ';base64,' . $base64;
+
+            return response()->json(['image_url' => $base64Image], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Exception $e) {
             return response('Something went wrong: ' . $e->getMessage(), 500);
         }
