@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\API;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Printer;
 use Illuminate\Support\Facades\Http;
@@ -31,46 +32,11 @@ class PrinterApiController extends Controller
             ], 500);
         }
     }
-
-
-    public function getHTML()
+    public function getSCImage(Request $request)
     {
         try {
-            $response = Http::get('https://dev.vrlapps.com/corevrl/core_app_booking/bk_gcprint_collection_landscap.aspx');
-
-            if ($response->failed()) {
-                return response('Failed to fetch URL', 500);
-            }
-
-            $html = $response->body();
-
-            $dom = new \DOMDocument();
-            libxml_use_internal_errors(true);
-            $dom->loadHTML($html);
-            libxml_clear_errors();
-
-            $tables = $dom->getElementsByTagName('table');
-
-            $tablesHtml = '';
-            if ($tables->length > 1) {
-                $tablesHtml .= $dom->saveHTML($tables[1]);
-            } elseif ($tables->length > 0) {
-                $tablesHtml .= $dom->saveHTML($tables[0]);
-            } else {
-                return response('No table found in the HTML.', 404);
-            }
-
-           return $tablesHtml;
-
-        } catch (\Exception $e) {
-            return response('Something went wrong: ' . $e->getMessage(), 500);
-        }
-    }
-
-    public function getHTMLSP()
-    {
-        try {
-            $response = Http::get('https://dev.vrlapps.com/corevrl/core_app_booking/bk_gcprint_collection_landscap.aspx');
+            $url = $request->query('url');
+            $response = Http::get($url);
             if ($response->failed()) {
                 return response('Failed to fetch URL', 500);
             }
