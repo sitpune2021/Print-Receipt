@@ -36,6 +36,7 @@ class PrinterApiController extends Controller
     {
         try {
             $url = $request->query('url');
+            // $response = Http::get('https://dev.vrlapps.com/corevrl/core_app_booking/bk_gcprint_collection_landscap.aspx');
             $response = Http::get($url);
             if ($response->failed()) {
                 return response('Failed to fetch URL', 500);
@@ -55,7 +56,7 @@ class PrinterApiController extends Controller
                         '--headless=new',
                         '--user-data-dir=/tmp/chrome-user-data',
                 ])
-                // ->windowSize(700, 300)
+                ->windowSize(700, 300)
                 ->deviceScaleFactor(2)
                 ->waitUntilNetworkIdle()
                 ->save($imagePath);
