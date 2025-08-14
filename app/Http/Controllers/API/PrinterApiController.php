@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Printer;
 use Illuminate\Support\Facades\Http;
 use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Str;
 use mikehaertl\wkhtmlto\Image;
 
 use Symfony\Component\Process\Process;
@@ -43,7 +44,7 @@ class PrinterApiController extends Controller
             }
 
             $html = $response->body();
-            $imageName = 'table-image-mobile.png';
+            $imageName = 'table-image-mobile-' . Str::random(10) . '.png';
             $imagePath = public_path($imageName);
 
                 Browsershot::html($html)
