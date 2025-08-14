@@ -68,7 +68,7 @@ class PrinterApiController extends Controller
             // $imageInfo = getimagesize($imagePath);
             // $base64Image = 'data:' . $imageInfo['mime'] . ';base64,' . $base64;
 
-            return response()->json(['image_url' => $imageUrl], 200, [], JSON_UNESCAPED_SLASHES);
+            return response()->json(['image_url' => $imageName], 200, [], JSON_UNESCAPED_SLASHES);
         } catch (\Exception $e) {
             return response('Something went wrong: ' . $e->getMessage(), 500);
         }
